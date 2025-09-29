@@ -1,38 +1,37 @@
-import asyncio
-
 from fastapi import FastAPI
+import uvicorn
 
-from api.models import Task
-from data_base.data_base import create_tables, create_task
+from api.models import ApiTask, ApiTaskChange
+from data_base.data_base import create_task, get_tasks, change_task, get_one_task, delete_db_task
 
 
 app = FastAPI()
 
 
 @app.post('/post')
-async def create_tasks(task: Task):
-    return None
+async def post_tasks(task: ApiTask):
+    return await create_task(task)
 
 
 @app.get('/tasks')
 async def get_list():
-    return {'message': f'Hello World!!! {get_list}'}
+    return await get_tasks()
 
 
 @app.get("/tasks/{task_id}")
-async def get_task(task_id):
-    return {'message': f'Hello World!!! {task_id}'}
+async def get_task(task_id: int):
+    return await get_one_task(task_id)
 
 
-@app.patch("/tasks/{task_id}")
-async def update_task(task_id, task: Task):
-    return {'message': f'Hello World!!! {task_id}'}
+@app.put("/tasks/{task_id}/update")
+async def update_task(task_id: int, changes: ApiTaskChange):
+    await change_task(task_id, changes)
 
 
-@app.delete("/tasks/{task_id}")
-async def delete_task(task_id):
-    return {'message': f'Hello World!!! {task_id}'}
+@app.delete("/tasks/{task_id}/delete")
+async def delete_task(task_id: int):
+    return await delete_db_task(task_id)
 
 
-asyncio.run(create_tables())
-asyncio.run(create_task())
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")

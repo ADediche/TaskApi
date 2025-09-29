@@ -20,7 +20,6 @@ class TaskStatus(Enum):
 class DB_Task(Base):
     """
     This class is for creating a table
-
     Args:
         id (num): primary key
         title (str): title of task
@@ -38,3 +37,6 @@ class DB_Task(Base):
         super().__init__(**kw)
         self.title = title
         self.description = description
+
+    def __str__(self):
+        return f'id: {self.id}, title: {self.title}, description: {self.description}, status: {self.status}'
